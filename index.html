@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WiFi Password Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #4CAF50, #2196F3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .generate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-container {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 2px dashed #dee2e6;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .password-output {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .password-text {
+            flex: 1;
+            padding: 12px 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            background: transparent;
+            border: none;
+            outline: none;
+        }
+
+        .copy-btn {
+            padding: 12px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+        }
+
+        .copy-btn.copied {
+            background: #2196F3;
+        }
+
+        .conversion-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .conversion-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .conversion-text {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #856404;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .password-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📶</div>
+        <h1>FiberHome WiFi Generator</h1>
+        <p class="subtitle">Generate default passwords for FiberHome router WiFi networks</p>
+        
+        <div class="input-group">
+            <label for="ssid">FiberHome WiFi SSID Name:</label>
+            <input type="text" id="ssid" placeholder="Masukkan nama SSID FiberHome (contoh: fh_b91f20_5G)" autocomplete="off">
+        </div>
+        
+        <button class="generate-btn" onclick="generatePassword()">
+            🔐 Generate Password
+        </button>
+        
+        <div class="result-container" id="resultContainer">
+            <div class="result-label">Generated Password:</div>
+            <div class="password-output">
+                <input type="text" class="password-text" id="passwordResult" readonly>
+                <button class="copy-btn" id="copyBtn" onclick="copyPassword()">Copy</button>
+            </div>
+        </div>
+        
+        <div class="warning">
+            ⚠️ <strong>Catatan:</strong> Tool ini khusus untuk router FiberHome dan hanya untuk tujuan edukasi serta testing keamanan jaringan sendiri. Pastikan Anda memiliki izin sebelum mencoba mengakses jaringan WiFi.
+        </div>
+    </div>
+
+    <footer style="text-align: center; margin-top: 30px; padding: 20px; color: rgba(255, 255, 255, 0.8); width: 100%; max-width: 500px;">
+        <p style="margin: 0; font-size: 14px;">
+            Made with ❤️ by 
+            <a href="https://github.com/kurapika12" target="_blank" style="color: white; text-decoration: none; font-weight: 600; border-bottom: 1px dotted rgba(255, 255, 255, 0.5);">Your Name</a>
+        </p>
+        <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.7;">
+            © 2025 - Educational Purpose Only
+        </p>
+    </footer>
+
+    <script>
+        // Konversi mapping berdasarkan metode yang benar
+        const conversionMap = {
+            // Huruf ke angka
+            'a': '5', 'b': '4', 'c': '3', 'd': '2', 'e': '1', 'f': '0',
+            'A': '5', 'B': '4', 'C': '3', 'D': '2', 'E': '1', 'F': '0',
+            // Angka ke huruf (kebalikannya)
+            '0': 'f', '1': 'e', '2': 'd', '3': 'c', '4': 'b', '5': 'a',
+            '6': '9', '7': '8', '8': '7', '9': '6'
+        };
+
+        function extractImportantPart(ssid) {
+            // Ekstrak bagian penting dari SSID
+            // Contoh: fh_b91f20_5G -> b91f20
+            // Cari pola: setelah underscore pertama sampai underscore kedua atau akhir
+            let parts = ssid.split('_');
+            if (parts.length >= 2) {
+                // Ambil bagian kedua (setelah underscore pertama)
+                let importantPart = parts[1];
+                // Hilangkan bagian yang tidak diperlukan (seperti _5G, _2G4, dll)
+                importantPart = importantPart.replace(/(_.*)/g, '');
+                return importantPart;
+            } else {
+                // Jika tidak ada underscore, gunakan seluruh SSID
+                return ssid.replace(/[^a-fA-F0-9]/g, ''); // Ambil hanya hex chars
+            }
+        }
+
+        function generatePassword() {
+            const ssidInput = document.getElementById('ssid');
+            const ssid = ssidInput.value.trim();
+            
+            if (!ssid) {
+                alert('Silakan masukkan nama SSID WiFi terlebih dahulu!');
+                ssidInput.focus();
+                return;
+            }
+            
+            // Ekstrak bagian penting dari SSID
+            const importantPart = extractImportantPart(ssid.toLowerCase());
+            
+            if (!importantPart) {
+                alert('Format SSID FiberHome tidak valid. Contoh format yang benar: fh_b91f20_5G');
+                return;
+            }
+            
+            // Konversi menggunakan mapping
+            let convertedPart = '';
+            for (let char of importantPart) {
+                if (conversionMap[char]) {
+                    convertedPart += conversionMap[char];
+                } else {
+                    convertedPart += char; // Karakter yang tidak ada di mapping tetap sama
+                }
+            }
+            
+            // Tambahkan prefix "wlan"
+            const password = 'wlan' + convertedPart;
+            
+            // Tampilkan hasil
+            const resultContainer = document.getElementById('resultContainer');
+            const passwordResult = document.getElementById('passwordResult');
+            
+            passwordResult.value = password;
+            resultContainer.classList.add('show');
+            
+            // Reset copy button
+            const copyBtn = document.getElementById('copyBtn');
+            copyBtn.textContent = 'Copy';
+            copyBtn.classList.remove('copied');
+            
+            // Auto-select password text
+            setTimeout(() => {
+                passwordResult.select();
+            }, 100);
+        }
+
+        function copyPassword() {
+            const passwordResult = document.getElementById('passwordResult');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Copy ke clipboard
+            passwordResult.select();
+            passwordResult.setSelectionRange(0, 99999); // Untuk mobile
+            
+            try {
+                document.execCommand('copy');
+                copyBtn.textContent = 'Copied!';
+                copyBtn.classList.add('copied');
+                
+                // Reset setelah 2 detik
+                setTimeout(() => {
+                    copyBtn.textContent = 'Copy';
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                alert('Gagal menyalin password. Silakan salin secara manual.');
+            }
+        }
+
+        // Enable generate button dengan Enter key
+        document.getElementById('ssid').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generatePassword();
+            }
+        });
+
+        // Auto-focus input saat halaman dimuat
+        window.addEventListener('load', function() {
+            document.getElementById('ssid').focus();
+        });
+    </script>
+</body>
+</html>
